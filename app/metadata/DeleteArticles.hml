@@ -1,0 +1,27 @@
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteArticles
+  outputType: "[Article!]!"
+  arguments:
+    - name: where
+      type: ArticleBoolExp!
+      description: The predicate
+  source:
+    dataConnectorName: reference
+    dataConnectorCommand:
+      procedure: delete_articles
+  graphql:
+    rootFieldName: app_deleteArticles
+    rootFieldKind: Mutation
+  description: Delete articles which match a predicate
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteArticles
+  permissions:
+    - role: admin
+      allowExecution: true

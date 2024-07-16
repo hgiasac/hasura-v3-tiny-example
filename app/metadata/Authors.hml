@@ -1,0 +1,125 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Author
+  description: An author
+  fields:
+    - name: firstName
+      type: String!
+      description: The author's first name
+    - name: id
+      type: Int!
+      description: The author's primary key
+    - name: lastName
+      type: String!
+      description: The author's last name
+  graphql:
+    typeName: App_Author
+    inputTypeName: App_AuthorInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: reference
+      dataConnectorObjectType: author
+      fieldMapping:
+        firstName:
+          column:
+            name: first_name
+        id:
+          column:
+            name: id
+        lastName:
+          column:
+            name: last_name
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Author
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - firstName
+          - id
+          - lastName
+
+---
+kind: ObjectBooleanExpressionType
+version: v1
+definition:
+  name: AuthorBoolExp
+  objectType: Author
+  dataConnectorName: reference
+  dataConnectorObjectType: author
+  comparableFields:
+    - fieldName: firstName
+      operators:
+        enableAll: true
+    - fieldName: id
+      operators:
+        enableAll: true
+    - fieldName: lastName
+      operators:
+        enableAll: true
+  graphql:
+    typeName: App_AuthorBoolExp
+
+---
+kind: Model
+version: v1
+definition:
+  name: Authors
+  objectType: Author
+  source:
+    dataConnectorName: reference
+    collection: authors
+  filterExpressionType: AuthorBoolExp
+  orderableFields:
+    - fieldName: firstName
+      orderByDirections:
+        enableAll: true
+    - fieldName: id
+      orderByDirections:
+        enableAll: true
+    - fieldName: lastName
+      orderByDirections:
+        enableAll: true
+  graphql:
+    selectMany:
+      queryRootField: app_authors
+    selectUniques:
+      - queryRootField: app_authorsById
+        uniqueIdentifier:
+          - id
+    orderByExpressionType: App_AuthorsOrderBy
+  description: A collection of authors
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Authors
+  permissions:
+    - role: admin
+      select:
+        filter: null
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: articles
+  sourceType: Author
+  target:
+    model:
+      name: Articles
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: authorId
+

@@ -1,0 +1,28 @@
+---
+kind: Command
+version: v1
+definition:
+  name: UpsertArticle
+  outputType: Article
+  arguments:
+    - name: article
+      type: Article!
+      description: The article to insert or update
+  source:
+    dataConnectorName: reference
+    dataConnectorCommand:
+      procedure: upsert_article
+  graphql:
+    rootFieldName: app_upsertArticle
+    rootFieldKind: Mutation
+  description: Insert or update an article
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpsertArticle
+  permissions:
+    - role: admin
+      allowExecution: true
+

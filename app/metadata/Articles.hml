@@ -1,0 +1,125 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Article
+  description: An article
+  fields:
+    - name: authorId
+      type: Int!
+      description: The article's author ID
+    - name: id
+      type: Int!
+      description: The article's primary key
+    - name: title
+      type: String!
+      description: The article's title
+  graphql:
+    typeName: App_Article
+    inputTypeName: App_ArticleInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: reference
+      dataConnectorObjectType: article
+      fieldMapping:
+        authorId:
+          column:
+            name: author_id
+        id:
+          column:
+            name: id
+        title:
+          column:
+            name: title
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Article
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - authorId
+          - id
+          - title
+
+---
+kind: ObjectBooleanExpressionType
+version: v1
+definition:
+  name: ArticleBoolExp
+  objectType: Article
+  dataConnectorName: reference
+  dataConnectorObjectType: article
+  comparableFields:
+    - fieldName: authorId
+      operators:
+        enableAll: true
+    - fieldName: id
+      operators:
+        enableAll: true
+    - fieldName: title
+      operators:
+        enableAll: true
+  graphql:
+    typeName: App_ArticleBoolExp
+
+---
+kind: Model
+version: v1
+definition:
+  name: Articles
+  objectType: Article
+  source:
+    dataConnectorName: reference
+    collection: articles
+  filterExpressionType: ArticleBoolExp
+  orderableFields:
+    - fieldName: authorId
+      orderByDirections:
+        enableAll: true
+    - fieldName: id
+      orderByDirections:
+        enableAll: true
+    - fieldName: title
+      orderByDirections:
+        enableAll: true
+  graphql:
+    selectMany:
+      queryRootField: app_articles
+    selectUniques:
+      - queryRootField: app_articlesById
+        uniqueIdentifier:
+          - id
+    orderByExpressionType: App_ArticlesOrderBy
+  description: A collection of articles
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Articles
+  permissions:
+    - role: admin
+      select:
+        filter: null
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: author
+  sourceType: Article
+  target:
+    model:
+      name: Authors
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: authorId
+      target:
+        modelField:
+          - fieldName: id
+

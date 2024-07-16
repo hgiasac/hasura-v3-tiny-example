@@ -1,0 +1,199 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Location
+  description: A location
+  fields:
+    - name: campuses
+      type: "[String!]!"
+      description: The location's campuses
+    - name: city
+      type: String!
+      description: The location's city
+    - name: country
+      type: String!
+      description: The location's country
+  graphql:
+    typeName: App_Location
+    inputTypeName: App_LocationInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: reference
+      dataConnectorObjectType: location
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Location
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - campuses
+          - city
+          - country
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: StaffMember
+  description: A staff member
+  fields:
+    - name: firstName
+      type: String!
+      description: The staff member's first name
+    - name: lastName
+      type: String!
+      description: The staff member's last name
+    - name: specialities
+      type: "[String!]!"
+      description: The staff member's specialities
+  graphql:
+    typeName: App_StaffMember
+    inputTypeName: App_StaffMemberInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: reference
+      dataConnectorObjectType: staff_member
+      fieldMapping:
+        firstName:
+          column:
+            name: first_name
+        lastName:
+          column:
+            name: last_name
+        specialities:
+          column:
+            name: specialities
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: StaffMember
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - firstName
+          - lastName
+          - specialities
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Institution
+  description: An institution
+  fields:
+    - name: departments
+      type: "[String!]!"
+      description: The institution's departments
+    - name: id
+      type: Int!
+      description: The institution's primary key
+    - name: location
+      type: Location!
+      description: The institution's location
+    - name: name
+      type: String!
+      description: The institution's name
+    - name: staff
+      type: "[StaffMember!]!"
+      description: The institution's staff
+  graphql:
+    typeName: App_Institution
+    inputTypeName: App_InstitutionInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: reference
+      dataConnectorObjectType: institution
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Institution
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - departments
+          - id
+          - location
+          - name
+          - staff
+
+---
+kind: ObjectBooleanExpressionType
+version: v1
+definition:
+  name: InstitutionBoolExp
+  objectType: Institution
+  dataConnectorName: reference
+  dataConnectorObjectType: institution
+  comparableFields:
+    - fieldName: departments
+      operators:
+        enableAll: true
+    - fieldName: id
+      operators:
+        enableAll: true
+    - fieldName: location
+      operators:
+        enableAll: true
+    - fieldName: name
+      operators:
+        enableAll: true
+    - fieldName: staff
+      operators:
+        enableAll: true
+  graphql:
+    typeName: App_InstitutionBoolExp
+
+---
+kind: Model
+version: v1
+definition:
+  name: Institutions
+  objectType: Institution
+  source:
+    dataConnectorName: reference
+    collection: institutions
+  filterExpressionType: InstitutionBoolExp
+  orderableFields:
+    - fieldName: departments
+      orderByDirections:
+        enableAll: true
+    - fieldName: id
+      orderByDirections:
+        enableAll: true
+    - fieldName: location
+      orderByDirections:
+        enableAll: true
+    - fieldName: name
+      orderByDirections:
+        enableAll: true
+    - fieldName: staff
+      orderByDirections:
+        enableAll: true
+  graphql:
+    selectMany:
+      queryRootField: app_institutions
+    selectUniques:
+      - queryRootField: app_institutionsById
+        uniqueIdentifier:
+          - id
+    orderByExpressionType: App_InstitutionsOrderBy
+  description: A collection of institutions
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Institutions
+  permissions:
+    - role: admin
+      select:
+        filter: null
+

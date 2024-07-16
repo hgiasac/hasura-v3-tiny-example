@@ -1,0 +1,43 @@
+---
+kind: Model
+version: v1
+definition:
+  name: ArticlesByAuthor
+  objectType: Article
+  arguments:
+    - name: authorId
+      type: Int!
+  source:
+    dataConnectorName: reference
+    collection: articles_by_author
+    argumentMapping:
+      authorId: author_id
+  filterExpressionType: ArticleBoolExp
+  orderableFields:
+    - fieldName: authorId
+      orderByDirections:
+        enableAll: true
+    - fieldName: id
+      orderByDirections:
+        enableAll: true
+    - fieldName: title
+      orderByDirections:
+        enableAll: true
+  graphql:
+    selectMany:
+      queryRootField: app_articlesByAuthor
+    selectUniques: []
+    argumentsInputType: App_ArticlesByAuthorArguments
+    orderByExpressionType: App_ArticlesByAuthorOrderBy
+  description: Articles parameterized by author
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ArticlesByAuthor
+  permissions:
+    - role: admin
+      select:
+        filter: null
+

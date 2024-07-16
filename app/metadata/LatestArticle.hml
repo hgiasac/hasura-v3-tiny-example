@@ -1,0 +1,24 @@
+---
+kind: Command
+version: v1
+definition:
+  name: LatestArticle
+  outputType: Article
+  source:
+    dataConnectorName: reference
+    dataConnectorCommand:
+      function: latest_article
+  graphql:
+    rootFieldName: app_latestArticle
+    rootFieldKind: Query
+  description: Get the most recent article
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: LatestArticle
+  permissions:
+    - role: admin
+      allowExecution: true
+
